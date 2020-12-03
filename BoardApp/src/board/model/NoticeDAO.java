@@ -41,6 +41,49 @@ public class NoticeDAO {
 		
 	}
 	
+	//레코드 수정하기
+	public int edit(Notice notice) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		int result = 0;
+		con = dbManager.getConnection();
+		
+		String sql = "update notice set author = ?, title = ?, content = ? where notice_id = ?";
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, notice.getAuthor()); //작성자
+			pstmt.setString(2, notice.getTitle()); //제목
+			pstmt.setString(3, notice.getContent()); //내용
+			pstmt.setInt(4, notice.getNotice_id());
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			dbManager.release(con, pstmt);
+		}
+		return result;
+	}
+	
+	//레코드 삭제하기
+	public int delete(int notice_id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		int result = 0;
+		String sql = "delete from notice where notice_id=?";
+		con = dbManager.getConnection();
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, notice_id);
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			dbManager.release(con, pstmt);
+		}
+		return result;
+	}
+	
 	//모든 레코드 가져오기
 	public ArrayList selectAll() {
 		Connection con = null;
