@@ -31,6 +31,7 @@ tr:nth-child(even) {
 }
 img{
 	position: absolute;
+	top: 15px;
 }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -62,7 +63,7 @@ $(function(){
     <td>
 		<a href="/imageboard/detail.jsp?board_id=<%=board.getBoard_id()%>"><%=board.getTitle()%></a>
 	</td>
-	</td><div></del><img src="/data/<%=board.getFilename()%>" width="50px" height="50px"></div><td>
+	<td><img src="/data/<%=board.getFilename()%>" width="50px" height="50px"></td>
     <td><%=board.getAuthor()%></td>
 	<td><%=board.getRegdate()%></td>
 	<td><%=board.getHit()%></td>

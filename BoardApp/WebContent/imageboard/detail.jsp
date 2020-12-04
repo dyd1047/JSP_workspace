@@ -101,7 +101,7 @@ textarea {
 			<input type="text" id="lname" name="title"
 				value="<%=board.getTitle()%>">
 			<label for="img">Image</label>
-			<img id="img" src="/data/<%=board.getFilename()%>">
+			<div style="width: 100%; height: auto;"><img id="img" src="/data/<%=board.getFilename()%>"></div>
 			<label for="subject">Content</label>
 			<textarea id="subject" name="content" placeholder="Write something.."
 				style="height: 200px"><%=board.getContent()%></textarea>
