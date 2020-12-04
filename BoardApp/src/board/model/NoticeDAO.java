@@ -148,6 +148,13 @@ public class NoticeDAO {
 				notice.setHit(rs.getInt("hit"));
 				notice.setRegdate(rs.getString("regdate"));
 			}
+			
+			//조회수 증가
+			sql = "update notice set hit = hit + 1 where notice_id=?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, notice_id);
+			pstmt.executeUpdate();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

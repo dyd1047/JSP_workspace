@@ -1,12 +1,14 @@
+<%@page import="board.model.ImageBoard"%>
+<%@page import="board.model.ImageBoardDAO"%>
 <%@page import="board.model.Notice"%>
 <%@ page contentType="text/html;charset=utf-8"%>
 <%@ page import="java.sql.*"%>
 <%@ page import="board.model.NoticeDAO"%>
 <%
-	String notice_id = request.getParameter("notice_id");
+	String board_id = request.getParameter("board_id");
 	
-	NoticeDAO noticeDAO = new NoticeDAO();
-	Notice notice = noticeDAO.select(Integer.parseInt(notice_id));
+	ImageBoardDAO dao = new ImageBoardDAO();
+	ImageBoard board = dao.select(Integer.parseInt(board_id));
 %>
 <!DOCTYPE html>
 <html>
@@ -93,13 +95,16 @@ textarea {
 	<div class="container">
 		<form>
 			<input type="hidden" name="notice_id"
-				value="<%=notice.getNotice_id()%>"> <label for="fname">Name</label>
+				value="<%=board.getBoard_id()%>"> <label for="fname">Name</label>
 			<input type="text" id="fname" name="author"
-				value="<%=notice.getAuthor()%>"> <label for="lname">Title</label>
+				value="<%=board.getAuthor()%>"> <label for="lname">Title</label>
 			<input type="text" id="lname" name="title"
-				value="<%=notice.getTitle()%>"> <label for="subject">Content</label>
+				value="<%=board.getTitle()%>">
+			<label for="img">Image</label>
+			<img id="img" src="/data/<%=board.getFilename()%>">
+			<label for="subject">Content</label>
 			<textarea id="subject" name="content" placeholder="Write something.."
-				style="height: 200px"><%=notice.getContent()%></textarea>
+				style="height: 200px"><%=board.getContent()%></textarea>
 
 			<input type="button" value="목록으로"> <input type="button"
 				value="수정하기"> <input type="button" value="삭제하기">

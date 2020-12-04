@@ -18,7 +18,7 @@ public class BoardContent extends Page{
 	JScrollPane scroll;
 	JButton bt_list, bt_edit, bt_del;
 	NoticeDAO noticeDAO;
-	Notice notice;
+	Notice notice; //VO
 	
 	public BoardContent(BoardMain boardMain) {
 		super(boardMain);
