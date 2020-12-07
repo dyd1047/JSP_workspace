@@ -20,6 +20,7 @@
 	DiskFileItemFactory itemFactory=new DiskFileItemFactory();
 	itemFactory.setRepository(new File(saveDir));
 	itemFactory.setSizeThreshold(maxSize);
+	itemFactory.setDefaultCharset("utf-8");
 	
 	ServletFileUpload upload=new ServletFileUpload(itemFactory);
 	
@@ -39,15 +40,21 @@
 				board.setTitle(item.getString());
 			}else if(item.getFieldName().equals("content")){//필드명이 content 라면...
 				board.setContent(item.getString());
+			}else if(item.getFieldName().equals("filename")){//필드명이 content 라면...
+				board.setContent(item.getString());
+			}else if(item.getFieldName().equals("board_id")){//필드명이 content 라면...
+				board.setContent(item.getString());
 			}
 		}else{ // textfield가 아니라면..업로드 처리
-			String newName=System.currentTimeMillis()+"."+FileManager.getExtend(item.getName());
-			String destFile = saveDir+"/"+newName;
-			File file = new File(destFile);
-			item.write(file);//물리적 저장 시점!!!	
-			
-			out.print("업로드 완료");
-			board.setFilename(newName);//vo 에 파일명 값을 담자!!
+			if(item.getName().length() > 0){ //파일을 교체한다면, 즉 업로드 하길 원한다면..
+				String newName=System.currentTimeMillis()+"."+FileManager.getExtend(item.getName());
+				String destFile = saveDir+"/"+newName;
+				File file = new File(destFile);
+				item.write(file);//물리적 저장 시점!!!	
+				
+				out.print("업로드 완료");
+				board.setFilename(newName);//vo 에 파일명 값을 담자!!
+			}
 			
 		}
 	}

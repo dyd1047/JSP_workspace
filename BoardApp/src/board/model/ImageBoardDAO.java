@@ -45,7 +45,7 @@ public class ImageBoardDAO {
 		try {
 			pstmt = con.prepareStatement(sql);
 			rs = pstmt.executeQuery();
-			while(rs.next()) {
+			while(rs.next()) { //ImageBoard를 레코드 만큼 생성하여 list에 추가!!
 				ImageBoard board = new ImageBoard();
 				board.setBoard_id(rs.getInt("board_id"));
 				board.setAuthor(rs.getString("author"));
@@ -87,6 +87,9 @@ public class ImageBoardDAO {
 				board.setHit(rs.getInt("hit"));
 				board.setFilename(rs.getString("filename"));
 			}
+			pstmt = con.prepareStatement("update imageboard set hit = hit + 1 where board_id=?");
+			pstmt.setInt(1, board_id);
+			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -99,7 +102,7 @@ public class ImageBoardDAO {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		int result = 0;
-		String sql = "update imageboard set author=?, title=?, content=? where board_id=?";
+		String sql = "update imageboard set author=?, title=?, content=?, filename=? where board_id=?";
 		
 		con = dbManager.getConnection();
 		try {
@@ -107,7 +110,8 @@ public class ImageBoardDAO {
 			pstmt.setString(1, board.getAuthor());
 			pstmt.setString(2, board.getTitle());
 			pstmt.setString(3, board.getContent());
-			pstmt.setInt(4, board.getBoard_id());
+			pstmt.setString(4, board.getFilename());
+			pstmt.setInt(5, board.getBoard_id());
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
