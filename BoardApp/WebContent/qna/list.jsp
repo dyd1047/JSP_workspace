@@ -1,16 +1,17 @@
 <%@page import="java.util.List"%>
-<%@page import="board.model.QnA"%>
 <%@page import="board.model.QnADAO"%>
-<%@page import="board.model.ImageBoardDAO"%>
-<%@page import="board.model.ImageBoard"%>
+<%@page import="board.model.QnA"%>
+<%@page import="board.model.Notice"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="board.model.NoticeDAO"%>
 <%@ page contentType="text/html;charset=utf-8"%>
+<%@ page import="db.DBManager"%>
 <%@ page import="java.sql.Connection"%>
 <%@ page import="java.sql.PreparedStatement"%>
 <%@ page import="java.sql.ResultSet"%>
-<%@ page import="java.util.ArrayList"%>
 <%
-	QnADAO dao = new QnADAO();
-	List<QnA> list = dao.selectAll();
+	QnADAO qnaDAO = new QnADAO();// TODO Auto-generated catch block();
+	List<QnA> list = qnaDAO.selectAll();
 %>
 <!DOCTYPE html>
 <html>
@@ -26,15 +27,19 @@ table {
 th, td {
   text-align: left;
   padding: 16px;
-  position: relative;
-  line-height: 50px;
 }
 tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 img{
-	position: absolute;
-	top: 15px;
+	box-sizing:border-box;
+}
+a{
+	text-decoration:none;
+	color:black;
+}
+a:hover{
+	text-decoration:underline;
 }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -58,15 +63,18 @@ $(function(){
 	<th>조회수</th>
   </tr>
 
-	<%for(int i = 0; i < list.size(); i++){%>
-	<%QnA qna = list.get(i); //각 칸에 들어간 vo 끄집어 내기 %>
+	<%for(int i=0;i<list.size();i++){%>
+	<%QnA qna=list.get(i); //각 칸에 들어간 vo 끄집어 내기%>
   <tr>
     <td>26</td>
     <td>
+    	<%if(qna.getDepth()>0){ //depth가 0보다 큰 경우 답변으로 판단하자 %>
+    		<img src="/images/reply.png" style="margin-left:<%=20*qna.getDepth()%>px">
+    	<%}%>
 		<a href="/qna/detail.jsp?qna_id=<%=qna.getQna_id()%>"><%=qna.getTitle()%></a>
 	</td>
-    <td><%=qna.getWriter()%></td>
-	<td><%=qna.getRegdate()%></td>
+    <td><%= qna.getWriter()%></td>
+	<td><%=qna.getRegdate().substring(0,10)%></td>
 	<td><%=qna.getHit()%></td>
   </tr>
 	<%}%>
