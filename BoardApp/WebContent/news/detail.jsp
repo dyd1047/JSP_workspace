@@ -37,20 +37,31 @@ input[name='msg']{
 	width:70%;
 }
 input[name='author']{
-	width:20%;
+	width:15%;
 }
 p{
 	display:inline-block;
 	background:#ffddff;
 }
 .msg{
-	width:70%;
+	width:60%;
 }
 .author{
 	width:10%;
 }
 .cdate{
 	width:18%;
+}
+.del{
+	width:10%;
+}
+
+a{
+	text-decoration: none;
+	color: black;
+}
+a:hover{
+	text-decoration: underline;
 }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -70,7 +81,25 @@ $(function(){
 	$($("button")[3]).click(function(){ //댓글등록
 		reply();
 	});
+	$($("button")[4]).click(function(){ //비동기 방식의 댓글등록
+		asyncReply();
+	});
+	
+	//댓글 목록 가져오기!
+	asyncList();
 });
+
+//비동기로 목록 가져오기
+function asyncList(){
+	var xhttp = new XMLHttpRequest(); //비동기 통신 객체
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			getList(this.responseText); //코멘트 리스트 동적 출력
+		}
+	};
+	xhttp.open("post", "/news/asynclist.jsp?news_id=<%=news_id%>", true);
+	xhttp.send();
+}
 
 function del(){
 	//자식 코멘트가 존재한다면, 업데이트!!
@@ -106,6 +135,89 @@ function reply(){
 	});
 	$("form").submit();
 }
+function asyncReply() {
+		var xhttp = new XMLHttpRequest(); //비동기 통신 객체
+		/*
+		0: request not initialized : 요청 준비도 안된상태
+		1: server connection established : 서버와 네트워크 연결이 된 상태
+		2: request received : 요청이 서버에 도달함
+		3: processing request : 서버가 요청을 처리중...
+		4: request finished and response is ready : 요청처리가 완료, 응답을 받는 단계
+		 */
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				//alert(this.responseText);
+				//전체화면 갱신이 아닌, 부분화면 갱신..(새로고침 되지 않음)
+				//SPA==Single Page Application
+				
+				//최신 댓글 목록 가져오기
+				
+				
+				getList(this.responseText); //코멘트 리스트 동적 출력
+			}
+		};
+		var author=$("input[name='author']").val();
+		var msg=$("input[name='msg']").val();
+		
+		var params="news_id=<%=news_id%>&author="+author+"&msg="+msg;
+		xhttp.open("post", "/news/asyncreply.jsp", true);
+		//반드시 open()메서드로 post를 지정한 후에나 아래의 post 속성이 지정이 가능
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		//xhttp.send("파라미터명=값&파라미터명=값");
+		xhttp.send(params);
+}
+function getList(data){
+	//alert(data); //서버로부터 전송받은 응답 데이터를 출력!!
+	//json을 파싱하자!!
+	//동적으로 태그를 생성하자!
+	var listBox = document.getElementById("listBox");
+	listBox.innerHTML=""; //기존 데이터 삭제
+	var tag=""; //div가 누적될 변수
+	
+	var json = JSON.parse(data); //파싱을 하게 되면, 그 결과로 반환하는 결과물은 객체가 된다..
+											//따라서 이 시점부터는 문자열에 불과했던 데이터를 객체처럼 접근하여 사용할 수 있다.
+	if(json.resultCode==0){
+		//alert("등록 실패..");
+	}else{
+		var jsonArray = json.commentsList; //배열을 반환
+		//alert("현재까지 등록된 댓글의 수는 "+jsonArray.length);
+		for(var i = 0; i < jsonArray.length; i++){
+			var comments=jsonArray[i]; //게시물 한건 반환(json객체)
+			console.log(comments.comments_id);
+			console.log(comments.author);
+			console.log(comments.msg);
+			console.log(comments.cdate);
+			console.log("---------------------------------------------");
+			
+			tag+="<div>";
+			tag+="<p class='msg'>"+comments.msg+"</p>";
+			tag+="<p class='author'>"+comments.author+"</p>";
+			tag+="<p class='cdate'>"+comments.cdate+"</p>";
+			tag+="<p class='del'><a href='javascript:delComments("+comments.comments_id+")'>삭제</a></p>";
+			1
+			tag+="</div>";
+		}
+	}
+	listBox.innerHTML=tag;
+}
+function delComments(comments_id){
+	var ans = confirm(comments_id + "를 삭제하기를 원해?")
+	
+	if(ans){ //확인버튼을 누른 경우만..
+		var xhttp = new XMLHttpRequest(); //비동기 통신 객체
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				if(this.responseText==0){
+					alert("삭제 실패");
+				}else{
+					asyncList();
+				}
+			}
+		};
+		xhttp.open("post", "/news/asyncdelete.jsp?comments_id="+comments_id, true);
+		xhttp.send();
+	}
+}
 </script>
 </head>
 <body>
@@ -134,20 +246,13 @@ function reply(){
 						<input type="text" placeholder="댓글을 입력" name="msg">
 						<input type="text" placeholder="작성자 입력" name="author">
 						<button type="button">등록</button>
+						<button type="button">비동기 등록</button>
 					</div>
 				</td>
 			</tr>
 			<!--댓글리스트 영역-->
 			<tr>
-				<td>
-				<%for(Comments comments : list){ %>
-					<div>
-						<p class="msg"><%=comments.getMsg() %></p>
-						<p class="author"><%=comments.getAuthor() %></p>
-						<p class="cdate"><%=comments.getCdate().substring(0, 10) %></p>
-					</div>
-					<%} %>
-				</td>
+				<td id="listBox"></td>
 			</tr>
 		</table>
 	</form>
