@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Notice">
+	<!-- 글쓰기, 모든글, 한건가져오기, 수정, 삭제 -->
+	<insert id="insert" parameterType="com.webapp1216.board.model.Notice">
+		insert into notice(title, writer, content) values(#{title}, #{writer}, #{content})
+	</insert>
+	<select id="selectAll" resultType="com.webapp1216.board.model.Notice">
+		select * from notice order by notice_id desc
+	</select>
+	<select id="select" parameterType="int" resultType="com.webapp1216.board.model.Notice">
+		select * from notice where notice_id=#{notice_id}
+	</select>
+	<update id="update" parameterType="com.webapp1216.board.model.Notice">
+		update notice set title=#{title}, writer=#{writer}, content=#{content} where notice_id=#{notice_id}
+	</update>
+	<delete id="delete" parameterType="int">
+		delete from notice where notice_id=#{notice_id}
+	</delete>
+</mapper>
