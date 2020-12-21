@@ -26,4 +26,9 @@ public class TestController implements Controller{
 		return "/view/test/result"; //파일명이 하드코딩되어 있다.
 	}
 
+	@Override
+	public boolean isForward() {
+		return false;
+	}
+
 }
